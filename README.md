@@ -20,3 +20,5 @@ docker run -d -it \
 
 docker logs thai_kl_embassy
 ```
+
+https://t.me/+LJXfkKmB7lwyYTQy
