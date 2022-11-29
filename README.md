@@ -9,7 +9,7 @@ export TG_CHAT_ID=<tg chanel ID>
 export API_LINK=https://my.linistry.com/api/CustomerApi/GetAvailabilityAsync?serviceId=3fb796f6-3829-40b9-a549-3feb2b12453a\&startyear=2022\&startmonth=10\&startday=30\&endyear=2022\&endmonth=12\&endday=3\&count=1
 ```
 
-
+```
 source .env
 docker build -t bot:latest .
 docker run -d -it \
@@ -19,3 +19,4 @@ docker run -d -it \
   --name thai_kl_embassy bot
 
 docker logs thai_kl_embassy
+```
