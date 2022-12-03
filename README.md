@@ -8,7 +8,7 @@ export TG_CHAT_ID=<tg chanel ID>
 ```
 
 
-source .env
+source .env<br>
 docker build -t bot:latest .
 docker run -d -it \
   -e TG_API_TOKEN=$TG_API_TOKEN \
