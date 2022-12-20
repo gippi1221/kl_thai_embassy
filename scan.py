@@ -16,29 +16,53 @@ def send_to_telegram(message):
     print(datetime.now().strftime('%m/%d/%Y, %H:%M:%S') + ' ' + e)
 
 #getting start of period
-today = date.today()
-curr_year = today.strftime("%Y")
-curr_month = today.strftime("%m")
-first_day = datetime(int(curr_year), int(curr_month), 1)
+def get_start_end_dates(dt):
+  curr_year = dt.strftime("%Y")
+  curr_month = dt.strftime("%m")
+  first_day = datetime(int(curr_year), int(curr_month), 1)
 
-prev_sun = first_day
-if (first_day.weekday() != 7):
-  idx = (first_day.weekday() + 1) % 7
-  prev_sun = first_day - timedelta(idx)
+  prev_sun = first_day
+  if (first_day.weekday() != 7):
+    idx = (first_day.weekday() + 1) % 7
+    prev_sun = first_day - timedelta(idx)
 
-start_year = prev_sun.strftime("%Y")
-start_month = prev_sun.strftime("%m")
-start_day = prev_sun.strftime("%d")
+  start_year = prev_sun.strftime("%Y")
+  start_month = prev_sun.strftime("%m")
+  start_day = prev_sun.strftime("%d")
 
-#TODO: get the same for the end of period
-#it's quite unpredictable now, so we have to wait next year :)
+  last_day = (dt.replace(day=1) + timedelta(days=32)).replace(day=1) - timedelta(days=1)
+  last_sun = last_day
+  if (last_day.weekday() != 5):
+    idx = (12 - last_sun.weekday()) % 7
+    last_sun = last_sun + timedelta(idx)
 
-s = f'https://my.linistry.com/api/CustomerApi/GetAvailabilityAsync?serviceId=3fb796f6-3829-40b9-a549-3feb2b12453a&startyear={start_year}&startmonth={start_month}&startday={start_day}&endyear=2022&endmonth=12&endday=31&count=1'
+  end_year = last_sun.strftime("%Y")
+  end_month = last_sun.strftime("%m")
+  end_day = last_sun.strftime("%d")
+
+  return start_year, start_month, start_day, end_year, end_month, end_day
+
+#current month
+dt = date.today()
+sy, sm, sd, ey, em, ed = get_start_end_dates(dt)
+s1 = f'https://my.linistry.com/api/CustomerApi/GetAvailabilityAsync?serviceId=3fb796f6-3829-40b9-a549-3feb2b12453a&startyear={sy}&startmonth={sm}&startday={sd}&endyear={ey}&endmonth={em}&endday={ed}&count=1'
+
+#next month
+dt = (date.today().replace(day=1) + timedelta(days=32)).replace(day=1)
+sy, sm, sd, ey, em, ed = get_start_end_dates(dt)
+s2 = f'https://my.linistry.com/api/CustomerApi/GetAvailabilityAsync?serviceId=3fb796f6-3829-40b9-a549-3feb2b12453a&startyear={sy}&startmonth={sm}&startday={sd}&endyear={ey}&endmonth={em}&endday={ed}&count=1'
 
 print(datetime.now().strftime('%m/%d/%Y, %H:%M:%S') + ' starting...')
 
 while (True):
-  x = requests.get(s)
+  x = requests.get(s1)
+  data = json.loads(x.content)
+
+  if len(data) > 0:
+    send_to_telegram(';'.join(data))
+    time.sleep(30)
+
+  x = requests.get(s2)
   data = json.loads(x.content)
 
   if len(data) > 0:
